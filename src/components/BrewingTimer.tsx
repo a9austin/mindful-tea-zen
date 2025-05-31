@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Timer, RotateCcw } from 'lucide-react';
-import type { TeaType, BrewingStyle } from '@/pages/Index';
+import { Timer, RotateCcw, Thermometer } from 'lucide-react';
+import { formatTemperature } from '@/data/teaData';
+import type { TeaType, BrewingStyle } from '@/types/tea';
 
 interface BrewingTimerProps {
   tea: TeaType;
@@ -33,7 +34,7 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
       setIsActive(true);
     } else if (currentStage === 'steeping') {
       const steepTime = isGongfu 
-        ? tea.gongfu!.firstSteepTime + ((currentInfusion - 1) * 5) // Increase by 5s each infusion
+        ? tea.gongfu!.firstSteepTime + ((currentInfusion - 1) * 7) // Increase by 7s each infusion
         : tea.steepTime;
       setTotalTime(steepTime);
       setTimeRemaining(steepTime);
@@ -78,11 +79,13 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
   };
 
   const getStageInfo = () => {
+    const temp = isGongfu ? tea.gongfu!.temperature : tea.temperature;
+    
     switch (currentStage) {
       case 'heating':
         return {
           title: 'Heating Water',
-          subtitle: `Bringing water to ${isGongfu ? tea.gongfu!.temperature : tea.temperature}°C`,
+          subtitle: `Bringing water to ${formatTemperature(temp)}`,
           icon: '♨️',
           animation: 'animate-breathe'
         };
@@ -90,7 +93,7 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
         return {
           title: isGongfu ? `Infusion ${currentInfusion}` : 'Steeping Tea',
           subtitle: isGongfu 
-            ? `Short, concentrated steeping - ${currentInfusion}/${tea.gongfu!.maxInfusions}`
+            ? `${tea.gongfu!.firstSteepTime + ((currentInfusion - 1) * 7)}s steep - ${currentInfusion}/${tea.gongfu!.maxInfusions}`
             : 'Let the flavors unfold mindfully',
           icon: isGongfu ? '🏮' : '🫖',
           animation: 'animate-bloom'
@@ -117,9 +120,19 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
         <h3 className="text-xl font-light text-tea-earth mb-2">
           {stageInfo.title}
         </h3>
-        <p className="text-tea-stone text-sm">
+        <p className="text-tea-stone text-sm mb-2">
           {stageInfo.subtitle}
         </p>
+        
+        {/* Tea details */}
+        <div className="flex justify-center items-center space-x-4 text-xs text-tea-stone/80">
+          <div className="flex items-center space-x-1">
+            <Thermometer className="w-3 h-3" />
+            <span>{formatTemperature(isGongfu ? tea.gongfu!.temperature : tea.temperature)}</span>
+          </div>
+          <span>•</span>
+          <span>{tea.name}</span>
+        </div>
       </div>
 
       {/* Progress Ring */}
@@ -171,6 +184,9 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
             <RotateCcw className="w-4 h-4" />
             Next Infusion ({currentInfusion + 1}/{tea.gongfu!.maxInfusions})
           </button>
+          <p className="text-xs text-tea-stone mt-2">
+            Increase time by ~5-10 seconds for deeper extraction
+          </p>
         </div>
       )}
 
@@ -198,7 +214,7 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
           : 'Focus on your breath as the water warms'
         )}
         {currentStage === 'steeping' && (isGongfu 
-          ? `Infusion ${currentInfusion} - watch the concentrated essence emerge`
+          ? `Infusion ${currentInfusion} - watch the essence emerge gradually`
           : 'Watch the tea leaves dance and unfurl'
         )}
       </div>

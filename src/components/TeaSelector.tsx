@@ -1,104 +1,12 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import type { TeaType, BrewingStyle } from '@/pages/Index';
+import { teaTypes, formatTemperature } from '@/data/teaData';
+import type { TeaType, BrewingStyle } from '@/types/tea';
 
 interface TeaSelectorProps {
   onTeaSelect: (tea: TeaType, style: BrewingStyle) => void;
 }
-
-const teaTypes: TeaType[] = [
-  {
-    id: 'green',
-    name: 'Green Tea',
-    temperature: 80,
-    steepTime: 180,
-    teaAmount: '1 tsp (2-3g)',
-    description: 'Delicate and fresh with grassy notes. Perfect for morning mindfulness.',
-    color: 'from-green-200 to-green-300',
-    gongfu: {
-      temperature: 80,
-      firstSteepTime: 10,
-      teaAmount: '5-6g per 100ml',
-      maxInfusions: 8
-    }
-  },
-  {
-    id: 'black',
-    name: 'Black Tea',
-    temperature: 95,
-    steepTime: 240,
-    teaAmount: '1 tsp (2-3g)',
-    description: 'Bold and robust. Ideal for energizing afternoon meditation.',
-    color: 'from-amber-600 to-amber-700',
-    gongfu: {
-      temperature: 95,
-      firstSteepTime: 15,
-      teaAmount: '6-7g per 100ml',
-      maxInfusions: 10
-    }
-  },
-  {
-    id: 'oolong',
-    name: 'Oolong Tea',
-    temperature: 85,
-    steepTime: 210,
-    teaAmount: '1 tsp (2-3g)',
-    description: 'Complex and balanced between green and black. For deep contemplation.',
-    color: 'from-yellow-300 to-orange-400',
-    gongfu: {
-      temperature: 90,
-      firstSteepTime: 8,
-      teaAmount: '7-8g per 100ml',
-      maxInfusions: 15
-    }
-  },
-  {
-    id: 'white',
-    name: 'White Tea',
-    temperature: 75,
-    steepTime: 240,
-    teaAmount: '2 tsp (3-4g)',
-    description: 'Subtle and gentle. Perfect for evening relaxation and reflection.',
-    color: 'from-gray-100 to-gray-200',
-    gongfu: {
-      temperature: 85,
-      firstSteepTime: 12,
-      teaAmount: '5-6g per 100ml',
-      maxInfusions: 12
-    }
-  },
-  {
-    id: 'herbal',
-    name: 'Herbal Tea',
-    temperature: 100,
-    steepTime: 300,
-    teaAmount: '1 tbsp (3-5g)',
-    description: 'Caffeine-free and soothing. Ideal for bedtime mindfulness practice.',
-    color: 'from-purple-200 to-pink-200',
-    gongfu: {
-      temperature: 100,
-      firstSteepTime: 20,
-      teaAmount: '6-8g per 100ml',
-      maxInfusions: 6
-    }
-  },
-  {
-    id: 'puer',
-    name: 'Pu-erh Tea',
-    temperature: 95,
-    steepTime: 180,
-    teaAmount: '1 tsp (3-4g)',
-    description: 'Aged and earthy with deep complexity. For experienced tea meditation.',
-    color: 'from-red-800 to-red-900',
-    gongfu: {
-      temperature: 100,
-      firstSteepTime: 5,
-      teaAmount: '7-8g per 100ml',
-      maxInfusions: 20
-    }
-  }
-];
 
 export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
   const [selectedTea, setSelectedTea] = useState<TeaType | null>(null);
@@ -137,7 +45,15 @@ export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
               Change Tea
             </button>
           </div>
-          <p className="text-tea-stone text-sm mb-6">{selectedTea.description}</p>
+          <p className="text-tea-stone text-sm mb-4">{selectedTea.description}</p>
+          
+          {selectedTea.brewingNotes && (
+            <div className="mb-6 p-3 bg-tea-sage/10 rounded-lg border border-tea-sage/20">
+              <p className="text-xs text-tea-earth">
+                <span className="font-medium">Brewing Note:</span> {selectedTea.brewingNotes}
+              </p>
+            </div>
+          )}
 
           <div className="grid md:grid-cols-2 gap-4">
             {/* Western Style */}
@@ -151,9 +67,10 @@ export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
                 </div>
                 <h4 className="font-medium text-tea-earth mb-2">Western Style</h4>
                 <div className="text-xs text-tea-stone space-y-1">
-                  <p>{selectedTea.temperature}°C • {Math.floor(selectedTea.steepTime / 60)}:{(selectedTea.steepTime % 60).toString().padStart(2, '0')} min</p>
+                  <p>{formatTemperature(selectedTea.temperature)}</p>
+                  <p>{Math.floor(selectedTea.steepTime / 60)}:{(selectedTea.steepTime % 60).toString().padStart(2, '0')} min</p>
                   <p>{selectedTea.teaAmount}</p>
-                  <p>Single long infusion</p>
+                  <p className="text-tea-sage">Single long infusion</p>
                 </div>
               </div>
             </Card>
@@ -169,13 +86,28 @@ export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
                 </div>
                 <h4 className="font-medium text-tea-earth mb-2">Gong-fu Style</h4>
                 <div className="text-xs text-tea-stone space-y-1">
-                  <p>{selectedTea.gongfu?.temperature}°C • {selectedTea.gongfu?.firstSteepTime}s first</p>
+                  <p>{formatTemperature(selectedTea.gongfu?.temperature || selectedTea.temperature)}</p>
+                  <p>{selectedTea.gongfu?.firstSteepTime}s first steep</p>
                   <p>{selectedTea.gongfu?.teaAmount}</p>
-                  <p>Up to {selectedTea.gongfu?.maxInfusions} infusions</p>
+                  <p className="text-tea-earth">Up to {selectedTea.gongfu?.maxInfusions} infusions</p>
+                  {selectedTea.gongfu?.rinseRequired && (
+                    <p className="text-tea-sage text-[10px]">
+                      Rinse required ({selectedTea.gongfu.rinseCount || 1}x)
+                    </p>
+                  )}
                 </div>
               </div>
             </Card>
           </div>
+
+          {/* Gong-fu specific guidance */}
+          {selectedTea.gongfu?.notes && (
+            <div className="mt-4 p-3 bg-tea-earth/5 rounded-lg border border-tea-earth/10">
+              <p className="text-xs text-tea-earth">
+                <span className="font-medium">Gong-fu Notes:</span> {selectedTea.gongfu.notes}
+              </p>
+            </div>
+          )}
         </Card>
       </div>
     );
@@ -202,12 +134,13 @@ export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
             <div className="text-center">
               <div className={`w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br ${tea.color} flex items-center justify-center group-hover:animate-pulse`}>
                 <span className="text-2xl">
-                  {tea.id === 'green' && '🍃'}
-                  {tea.id === 'black' && '☕'}
-                  {tea.id === 'oolong' && '🌿'}
-                  {tea.id === 'white' && '🤍'}
-                  {tea.id === 'herbal' && '🌸'}
-                  {tea.id === 'puer' && '🍂'}
+                  {tea.category === 'green' && '🍃'}
+                  {tea.category === 'black' && '☕'}
+                  {(tea.category === 'oolong' || tea.id.includes('oolong')) && '🌿'}
+                  {tea.category === 'white' && '🤍'}
+                  {tea.category === 'puer' && '🍂'}
+                  {tea.category === 'yellow' && '💛'}
+                  {tea.category === 'herbal' && '🌸'}
                 </span>
               </div>
               
@@ -220,8 +153,14 @@ export const TeaSelector: React.FC<TeaSelectorProps> = ({ onTeaSelect }) => {
               </p>
               
               <div className="space-y-1 text-xs text-tea-stone">
-                <p>{tea.temperature}°C • {Math.floor(tea.steepTime / 60)}:{(tea.steepTime % 60).toString().padStart(2, '0')} min</p>
+                <p>{formatTemperature(tea.temperature)}</p>
+                <p>{Math.floor(tea.steepTime / 60)}:{(tea.steepTime % 60).toString().padStart(2, '0')} min Western</p>
                 <p>{tea.teaAmount}</p>
+                {tea.gongfu && (
+                  <p className="text-tea-earth text-[10px]">
+                    Gong-fu: up to {tea.gongfu.maxInfusions} steeps
+                  </p>
+                )}
               </div>
             </div>
           </Card>
