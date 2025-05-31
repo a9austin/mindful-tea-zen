@@ -14,12 +14,26 @@ export interface TeaType {
   teaAmount: string;
   description: string;
   color: string;
+  gongfu?: {
+    temperature: number;
+    firstSteepTime: number;
+    teaAmount: string;
+    maxInfusions: number;
+  };
 }
+
+export type BrewingStyle = 'western' | 'gongfu';
 
 const Index = () => {
   const [selectedTea, setSelectedTea] = useState<TeaType | null>(null);
+  const [brewingStyle, setBrewingStyle] = useState<BrewingStyle>('western');
   const [isBrewingActive, setIsBrewingActive] = useState(false);
   const [currentStage, setCurrentStage] = useState<'preparation' | 'heating' | 'steeping' | 'ready'>('preparation');
+
+  const handleTeaSelect = (tea: TeaType, style: BrewingStyle) => {
+    setSelectedTea(tea);
+    setBrewingStyle(style);
+  };
 
   const handleStartBrewing = () => {
     if (selectedTea) {
@@ -49,15 +63,20 @@ const Index = () => {
         {/* Main Content */}
         <div className="grid gap-6 md:gap-8">
           {!selectedTea ? (
-            <TeaSelector onTeaSelect={setSelectedTea} />
+            <TeaSelector onTeaSelect={handleTeaSelect} />
           ) : (
             <>
               {/* Selected Tea Info */}
               <Card className="p-6 bg-card/80 backdrop-blur-sm border-tea-stone/20">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-2xl font-light text-tea-earth">
-                    {selectedTea.name}
-                  </h2>
+                  <div>
+                    <h2 className="text-2xl font-light text-tea-earth">
+                      {selectedTea.name}
+                    </h2>
+                    <p className="text-sm text-tea-sage font-medium capitalize">
+                      {brewingStyle} Style
+                    </p>
+                  </div>
                   <button
                     onClick={() => {
                       setSelectedTea(null);
@@ -73,13 +92,14 @@ const Index = () => {
               </Card>
 
               {/* Brewing Instructions */}
-              <BrewingInstructions tea={selectedTea} currentStage={currentStage} />
+              <BrewingInstructions tea={selectedTea} brewingStyle={brewingStyle} currentStage={currentStage} />
 
               {/* Timer and Mindfulness */}
               {isBrewingActive ? (
                 <div className="grid md:grid-cols-2 gap-6">
                   <BrewingTimer
                     tea={selectedTea}
+                    brewingStyle={brewingStyle}
                     onComplete={handleBrewingComplete}
                     currentStage={currentStage}
                     onStageChange={setCurrentStage}

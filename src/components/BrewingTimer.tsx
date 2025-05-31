@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Timer } from 'lucide-react';
-import type { TeaType } from '@/pages/Index';
+import { Timer, RotateCcw } from 'lucide-react';
+import type { TeaType, BrewingStyle } from '@/pages/Index';
 
 interface BrewingTimerProps {
   tea: TeaType;
+  brewingStyle: BrewingStyle;
   onComplete: () => void;
   currentStage: 'preparation' | 'heating' | 'steeping' | 'ready';
   onStageChange: (stage: 'preparation' | 'heating' | 'steeping' | 'ready') => void;
@@ -13,6 +14,7 @@ interface BrewingTimerProps {
 
 export const BrewingTimer: React.FC<BrewingTimerProps> = ({
   tea,
+  brewingStyle,
   onComplete,
   currentStage,
   onStageChange
@@ -20,6 +22,9 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const [isActive, setIsActive] = useState(false);
+  const [currentInfusion, setCurrentInfusion] = useState(1);
+
+  const isGongfu = brewingStyle === 'gongfu';
 
   useEffect(() => {
     if (currentStage === 'heating') {
@@ -27,11 +32,14 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
       setTimeRemaining(60);
       setIsActive(true);
     } else if (currentStage === 'steeping') {
-      setTotalTime(tea.steepTime);
-      setTimeRemaining(tea.steepTime);
+      const steepTime = isGongfu 
+        ? tea.gongfu!.firstSteepTime + ((currentInfusion - 1) * 5) // Increase by 5s each infusion
+        : tea.steepTime;
+      setTotalTime(steepTime);
+      setTimeRemaining(steepTime);
       setIsActive(true);
     }
-  }, [currentStage, tea.steepTime]);
+  }, [currentStage, tea, isGongfu, currentInfusion]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -62,20 +70,29 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
   const minutes = Math.floor(timeRemaining / 60);
   const seconds = timeRemaining % 60;
 
+  const handleNextInfusion = () => {
+    if (isGongfu && currentInfusion < tea.gongfu!.maxInfusions) {
+      setCurrentInfusion(prev => prev + 1);
+      onStageChange('steeping');
+    }
+  };
+
   const getStageInfo = () => {
     switch (currentStage) {
       case 'heating':
         return {
           title: 'Heating Water',
-          subtitle: `Bringing water to ${tea.temperature}°C`,
+          subtitle: `Bringing water to ${isGongfu ? tea.gongfu!.temperature : tea.temperature}°C`,
           icon: '♨️',
           animation: 'animate-breathe'
         };
       case 'steeping':
         return {
-          title: 'Steeping Tea',
-          subtitle: 'Let the flavors unfold mindfully',
-          icon: '🫖',
+          title: isGongfu ? `Infusion ${currentInfusion}` : 'Steeping Tea',
+          subtitle: isGongfu 
+            ? `Short, concentrated steeping - ${currentInfusion}/${tea.gongfu!.maxInfusions}`
+            : 'Let the flavors unfold mindfully',
+          icon: isGongfu ? '🏮' : '🫖',
           animation: 'animate-bloom'
         };
       default:
@@ -144,6 +161,19 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
         </div>
       </div>
 
+      {/* Gong-fu specific elements */}
+      {isGongfu && currentStage === 'ready' && currentInfusion < tea.gongfu!.maxInfusions && (
+        <div className="mb-4">
+          <button
+            onClick={handleNextInfusion}
+            className="bg-tea-earth hover:bg-tea-earth/80 text-white px-6 py-2 rounded-full font-light transition-all duration-300 hover:scale-105 flex items-center gap-2 mx-auto"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Next Infusion ({currentInfusion + 1}/{tea.gongfu!.maxInfusions})
+          </button>
+        </div>
+      )}
+
       {/* Bloom animation for steeping */}
       {currentStage === 'steeping' && (
         <div className="flex justify-center space-x-2 mb-4">
@@ -163,8 +193,14 @@ export const BrewingTimer: React.FC<BrewingTimerProps> = ({
       )}
 
       <div className="text-sm text-tea-stone">
-        {currentStage === 'heating' && 'Focus on your breath as the water warms'}
-        {currentStage === 'steeping' && 'Watch the tea leaves dance and unfurl'}
+        {currentStage === 'heating' && (isGongfu 
+          ? 'Warm your teaware and focus on your breath'
+          : 'Focus on your breath as the water warms'
+        )}
+        {currentStage === 'steeping' && (isGongfu 
+          ? `Infusion ${currentInfusion} - watch the concentrated essence emerge`
+          : 'Watch the tea leaves dance and unfurl'
+        )}
       </div>
     </Card>
   );
