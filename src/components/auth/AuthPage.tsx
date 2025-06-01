@@ -1,9 +1,8 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { AuthForm } from './AuthForm';
 import { GoogleSignIn } from './GoogleSignIn';
-import { AnimatedBackground } from './AnimatedBackground';
+import { AnimatedBackground } from './animations/AnimatedBackground';
 
 export const AuthPage: React.FC = () => {
   const [isSignUp, setIsSignUp] = useState(false);
