@@ -1,7 +1,7 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SessionProvider, useSession } from '@/contexts/SessionContext';
-import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { SessionManager } from '@/components/SessionManager';
 import { ActiveSessionView } from '@/components/ActiveSessionView';
 import { Button } from '@/components/ui/button';
@@ -128,6 +128,11 @@ const UnauthenticatedContent = () => {
 
 const IndexContent = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('IndexContent - user:', user?.email, 'loading:', loading);
+  }, [user, loading]);
 
   if (loading) {
     return (
