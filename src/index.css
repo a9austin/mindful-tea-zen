@@ -43,6 +43,13 @@
     --sidebar-accent-foreground: 25 15% 25%;
     --sidebar-border: 40 15% 88%;
     --sidebar-ring: 95 25% 55%;
+
+    /* Tea-inspired colors */
+    --tea-sage: 95 25% 55%;
+    --tea-cream: 35 30% 96%;
+    --tea-clay: 25 35% 85%;
+    --tea-earth: 25 25% 35%;
+    --tea-stone: 25 15% 55%;
   }
 
   .dark {
@@ -92,6 +99,154 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Tea-inspired color utilities */
+  .text-tea-sage { color: hsl(var(--tea-sage)); }
+  .text-tea-cream { color: hsl(var(--tea-cream)); }
+  .text-tea-clay { color: hsl(var(--tea-clay)); }
+  .text-tea-earth { color: hsl(var(--tea-earth)); }
+  .text-tea-stone { color: hsl(var(--tea-stone)); }
+  
+  .bg-tea-sage { background-color: hsl(var(--tea-sage)); }
+  .bg-tea-cream { background-color: hsl(var(--tea-cream)); }
+  .bg-tea-clay { background-color: hsl(var(--tea-clay)); }
+  .bg-tea-earth { background-color: hsl(var(--tea-earth)); }
+  .bg-tea-stone { background-color: hsl(var(--tea-stone)); }
+
+  /* Studio Ghibli-inspired animations */
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-10px) rotate(2deg);
+    }
+  }
+
+  @keyframes float-delayed {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-15px) rotate(-2deg);
+    }
+  }
+
+  @keyframes bloom {
+    0% {
+      transform: scale(0.8) rotate(-5deg);
+      opacity: 0.7;
+    }
+    50% {
+      transform: scale(1.1) rotate(2deg);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+      opacity: 0.9;
+    }
+  }
+
+  @keyframes drift {
+    0% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateX(10px) translateY(-5px) rotate(2deg);
+    }
+    66% {
+      transform: translateX(-5px) translateY(-10px) rotate(-1deg);
+    }
+    100% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+  }
+
+  @keyframes drift-delayed {
+    0% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+    33% {
+      transform: translateX(-8px) translateY(-8px) rotate(-2deg);
+    }
+    66% {
+      transform: translateX(8px) translateY(-5px) rotate(1deg);
+    }
+    100% {
+      transform: translateX(0px) translateY(0px) rotate(0deg);
+    }
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  @keyframes rain {
+    0% {
+      transform: translateY(-100vh);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float-delayed 4s ease-in-out infinite;
+  }
+
+  .animate-bloom {
+    animation: bloom 2s ease-in-out infinite;
+  }
+
+  .animate-drift {
+    animation: drift 6s ease-in-out infinite;
+  }
+
+  .animate-drift-delayed {
+    animation: drift-delayed 6s ease-in-out infinite;
+  }
+
+  .animate-ripple {
+    animation: ripple 2s ease-out infinite;
+  }
+
+  .animate-rain {
+    animation: rain 3s linear infinite;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 3s linear infinite;
   }
 }
 

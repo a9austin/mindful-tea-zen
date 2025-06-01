@@ -9,7 +9,75 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          favorite_tea_types: string[] | null
+          id: string
+          preferred_brewing_methods: string[] | null
+          tea_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          favorite_tea_types?: string[] | null
+          id: string
+          preferred_brewing_methods?: string[] | null
+          tea_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          favorite_tea_types?: string[] | null
+          id?: string
+          preferred_brewing_methods?: string[] | null
+          tea_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      tea_sessions: {
+        Row: {
+          brewing_method: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          rating: number | null
+          steep_time: number | null
+          tea_type: string
+          temperature_celsius: number | null
+          user_id: string | null
+        }
+        Insert: {
+          brewing_method?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          rating?: number | null
+          steep_time?: number | null
+          tea_type: string
+          temperature_celsius?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          brewing_method?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          rating?: number | null
+          steep_time?: number | null
+          tea_type?: string
+          temperature_celsius?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
